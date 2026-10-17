@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Olive &amp; Oat — Brunch &amp; Coffee in Nicosia</title>
+  <meta name="description" content="Olive & Oat is a modern brunch café in the heart of Nicosia, Cyprus. Specialty coffee, all-day breakfast and Cypriot-inspired brunch. Book your table online.">
+  <meta name="theme-color" content="#F7F1E8">
+
+  <!-- Open Graph (link previews on Facebook / Viber / WhatsApp / Messenger) -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://aristidiskamaritis.github.io/olive-and-oat/">
+  <meta property="og:title" content="Olive & Oat — Brunch & Coffee in Nicosia">
+  <meta property="og:description" content="Specialty coffee, all-day breakfast and Cypriot-inspired brunch in the heart of Nicosia.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1200&h=630&q=80">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://images.unsplash.com">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:ital,wght@0,300;0,400;1,300;1,400&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="images/film-poster.jpg" fetchpriority="high">
+
+  <link rel="stylesheet" href="css/style.css?v=2">
+
+  <script>
+    document.documentElement.classList.add("js");
+    // ?motion=1 forces animations even when the device asks for reduced motion
+    if (/[?&]motion=1/.test(location.search)) document.documentElement.classList.add("force-motion");
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CafeOrCoffeeShop",
+    "name": "Olive & Oat",
+    "url": "https://aristidiskamaritis.github.io/olive-and-oat/",
+    "image": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1200&q=80",
+    "servesCuisine": ["Brunch", "Breakfast", "Coffee", "Mediterranean"],
+    "priceRange": "€€",
+    "telephone": "+357 22 123 456",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "27 Stasikratous Street",
+      "addressLocality": "Nicosia",
+      "postalCode": "1065",
+      "addressCountry": "CY"
+    },
+    "openingHoursSpecification": [
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "07:30", "closes": "17:00" },
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Saturday","Sunday"], "opens": "08:30", "closes": "18:00" }
+    ],
+    "acceptsReservations": "True"
+  }
+  </script>
+</head>
+<body>
+  <!-- One Seedance film behind the whole page; scrolling moves through it scene by scene -->
+  <div class="film" aria-hidden="true">
+    <video class="film-video" muted playsinline preload="auto" poster="images/film-poster.jpg" disablepictureinpicture tabindex="-1">
+      <source src="videos/film.mp4" type="video/mp4">
+    </video>
+    <div class="film-veil"></div>
+  </div>
+  <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+
+  <!-- ============ HEADER ============ -->
+  <header class="site-header" id="top">
+    <div class="container header-inner">
+      <a href="#top" class="logo" aria-label="Olive & Oat — home">
+        <svg class="logo-mark" viewBox="0 0 40 40" aria-hidden="true">
+          <circle cx="20" cy="20" r="19" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M20 31c0-8 0-14 0-20" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <ellipse cx="14.5" cy="17" rx="5" ry="2.6" transform="rotate(-35 14.5 17)" fill="currentColor"/>
+          <ellipse cx="25.5" cy="22" rx="5" ry="2.6" transform="rotate(35 25.5 22)" fill="currentColor"/>
+          <ellipse cx="14.5" cy="25.5" rx="4.2" ry="2.2" transform="rotate(-35 14.5 25.5)" fill="currentColor" opacity=".55"/>
+        </svg>
+        <span class="logo-text">Olive <em>&amp;</em> Oat</span>
+      </a>
+
+      <nav class="main-nav" id="main-nav" aria-label="Main">
+        <ul>
+          <li><a href="#about" data-i18n="nav.about">Our Story</a></li>
+          <li><a href="#menu" data-i18n="nav.menu">Menu</a></li>
+          <li><a href="#gallery" data-i18n="nav.gallery">Gallery</a></li>
+          <li><a href="#reviews" data-i18n="nav.reviews">Reviews</a></li>
+          <li><a href="#visit" data-i18n="nav.visit">Visit</a></li>
+        </ul>
+        <a href="#reserve" class="btn btn-primary nav-mobile-cta" data-i18n="nav.book">Book a table</a>
+      </nav>
+
+      <div class="header-actions">
+        <div class="lang-switch" role="group" aria-label="Language">
+          <span class="pill" aria-hidden="true"></span>
+          <button type="button" data-lang="en" aria-pressed="true">EN</button>
+          <button type="button" data-lang="el" aria-pressed="false">ΕΛ</button>
+        </div>
+        <a href="#reserve" class="btn btn-primary btn-sm header-cta" data-i18n="nav.book">Book a table</a>
+        <button class="nav-toggle" type="button" aria-controls="main-nav" aria-expanded="false" aria-label="Open menu">
+          <span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- ============ HERO ============ -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-media" aria-hidden="true"></div>
+      <div class="container hero-content">
+        <p class="status-pill" id="open-status" aria-live="polite"><span class="dot"></span><span class="status-text">&nbsp;</span></p>
+        <h1 id="hero-title" class="hero-title" data-split>
+          <span data-i18n="hero.line1">Slow mornings,</span>
+          <em data-i18n="hero.line2">good coffee.</em>
+        </h1>
+        <p class="hero-lead" data-i18n="hero.lead">Specialty coffee, all-day breakfast and Cypriot-inspired brunch in the heart of Nicosia.</p>
+        <div class="hero-ctas">
+          <a href="#reserve" class="btn btn-primary" data-i18n="hero.cta1">Book a table</a>
+          <a href="#menu" class="btn btn-ghost-light" data-i18n="hero.cta2">See the menu</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Practical details, straight after the hero -->
+    <div class="info-strip">
+      <div class="container info-strip-inner">
+        <p><strong data-i18n="strip.where">27 Stasikratous St, Nicosia</strong><span data-i18n="strip.whereSub">Five minutes from Eleftheria Square</span></p>
+        <p><strong data-i18n="strip.when">Mon–Fri 07:30–17:00</strong><span data-i18n="strip.whenSub">Sat–Sun 08:30–18:00</span></p>
+        <p><strong data-i18n="strip.book">Walk-ins welcome</strong><span data-i18n="strip.bookSub">Booking recommended for weekend brunch</span></p>
+      </div>
+    </div>
+
+    <!-- ============ ABOUT ============ -->
+    <section class="section about" id="about" aria-labelledby="about-title">
+      <div class="container about-grid">
+        <div class="about-images">
+          <div class="about-img-main img-reveal" data-speed="-6">
+            <img src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1000&q=80" alt="Inside the café: wooden tables and warm light" loading="lazy" decoding="async" data-i18n-alt="about.img1">
+          </div>
+          <div class="about-img-small img-reveal" data-speed="10">
+            <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80" alt="Latte art in a ceramic cup" loading="lazy" decoding="async" data-i18n-alt="about.img2">
+          </div>
+          <div class="about-badge">
+            <svg viewBox="0 0 120 120" class="badge-ring" aria-hidden="true">
+              <defs><path id="badge-circle" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0"/></defs>
+              <text><textPath href="#badge-circle">COFFEE · BRUNCH · BAKERY · NICOSIA · </textPath></text>
+            </svg>
+            <span class="badge-center"><small data-i18n="about.badge">since</small><strong>2019</strong></span>
+          </div>
+        </div>
+        <div class="about-text glass">
+          <p class="eyebrow" data-anim="fade" data-i18n="about.eyebrow">Our story</p>
+          <h2 id="about-title" class="section-title" data-split data-i18n="about.title">A small café on Stasikratous Street</h2>
+          <p data-anim="fade" data-i18n="about.p1">Olive &amp; Oat began with a simple idea: the unhurried Cypriot morning, served with care.</p>
+          <p data-anim="fade" data-i18n="about.p2">Whether it's a quick freddo before a lecture or a long Sunday brunch with friends, there's always a seat waiting for you.</p>
+          <ul class="stats" data-anim="stagger">
+            <li><strong>12</strong><span data-i18n="about.stat1">farms and producers we buy from</span></li>
+            <li><strong>6am</strong><span data-i18n="about.stat2">when the first loaves come out</span></li>
+            <li><strong>4.9</strong><span data-i18n="about.stat3">on Google, from 320+ reviews</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CREW ============ -->
+    <section class="section crew" id="crew" aria-labelledby="crew-title">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow eyebrow-light" data-anim="fade" data-i18n="crew.eyebrow">Who runs the place</p>
+          <h2 id="crew-title" class="section-title" data-split data-i18n="crew.title">Andreas and Eleni</h2>
+        </div>
+        <div class="crew-grid">
+          <article class="crew-card">
+            <div class="crew-photo img-reveal"><img src="https://images.unsplash.com/photo-1607631568010-a87245c0daf8?auto=format&fit=crop&crop=faces&w=900&h=1100&q=80" alt="Andreas, owner of Olive &amp; Oat, smiling in the café" loading="lazy" decoding="async" data-i18n-alt="crew.1.alt"></div>
+            <div class="crew-body glass-dark" data-anim="stagger">
+              <p class="crew-role" data-i18n="crew.1.role">Founder &amp; Owner</p>
+              <h3 data-i18n="crew.1.name">Andreas Constantinou</h3>
+              <p data-i18n="crew.1.bio">Andreas grew up above his grandmother's kafeneio in old Nicosia.</p>
+              <blockquote data-i18n="crew.1.quote">“I want every guest to feel like they've walked into my grandmother's kitchen — just with better coffee.”</blockquote>
+            </div>
+          </article>
+          <article class="crew-card">
+            <div class="crew-photo img-reveal"><img src="https://images.unsplash.com/photo-1595257841889-eca2678454e2?auto=format&fit=crop&crop=faces&w=900&h=1100&q=80" alt="Head chef Eleni plating dishes in the kitchen" loading="lazy" decoding="async" data-i18n-alt="crew.2.alt"></div>
+            <div class="crew-body glass-dark" data-anim="stagger">
+              <p class="crew-role" data-i18n="crew.2.role">Head Chef</p>
+              <h3 data-i18n="crew.2.name">Eleni Petrou</h3>
+              <p data-i18n="crew.2.bio">Eleni learned to cook in her mother's village kitchen near Paphos.</p>
+              <blockquote data-i18n="crew.2.quote">“Halloumi, carob, honey — the island gives us everything. My job is not to get in its way.”</blockquote>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SIGNATURES ============ -->
+    <section class="section signatures" aria-labelledby="sig-title">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow" data-anim="fade" data-i18n="sig.eyebrow">Guest favourites</p>
+          <h2 id="sig-title" class="section-title" data-split data-i18n="sig.title">Our signature plates</h2>
+        </div>
+        <div class="sig-grid" data-anim="stagger">
+          <article class="sig-card">
+            <div class="sig-img img-reveal"><img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&w=800&q=80" alt="" loading="lazy" decoding="async"></div>
+            <div class="sig-body">
+              <h3 data-i18n="sig.1.name">Rose &amp; Pistachio Ricotta Pancakes</h3>
+              <p data-i18n="sig.1.desc">Fluffy ricotta pancakes, rose-scented cream, crushed Aegina pistachios and a drizzle of Cyprus honey.</p>
+              <span class="price">€11.00</span>
+            </div>
+          </article>
+          <article class="sig-card">
+            <div class="sig-img img-reveal"><img src="https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=800&q=80" alt="" loading="lazy" decoding="async"></div>
+            <div class="sig-body">
+              <h3 data-i18n="sig.2.name">Halloumi &amp; Za'atar Eggs</h3>
+              <p data-i18n="sig.2.desc">Two poached eggs on toasted sourdough, grilled halloumi, za'atar butter and blistered cherry tomatoes.</p>
+              <span class="price">€9.50</span>
+            </div>
+          </article>
+          <article class="sig-card">
+            <div class="sig-img img-reveal"><img src="https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?auto=format&fit=crop&w=800&q=80" alt="" loading="lazy" decoding="async"></div>
+            <div class="sig-body">
+              <h3 data-i18n="sig.3.name">Avocado &amp; Feta Toast</h3>
+              <p data-i18n="sig.3.desc">Smashed avocado, whipped feta, pickled red onion, chilli flakes and fresh mint on house sourdough.</p>
+              <span class="price">€10.00</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MENU ============ -->
+    <section class="section menu" id="menu" aria-labelledby="menu-title">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow" data-anim="fade" data-i18n="menu.eyebrow">Served all day</p>
+          <h2 id="menu-title" class="section-title" data-split data-i18n="menu.title">The Menu</h2>
+        </div>
+
+        <div class="menu-controls" data-anim="fade">
+          <div class="menu-tabs" role="tablist" aria-label="Menu categories" id="menu-tabs"></div>
+          <div class="menu-filters" role="group" aria-label="Dietary filters" id="menu-filters">
+            <button type="button" class="chip" data-filter="V" aria-pressed="false"><span class="tag tag-V">V</span> <span data-i18n="diet.V">Vegetarian</span></button>
+            <button type="button" class="chip" data-filter="VG" aria-pressed="false"><span class="tag tag-VG">VG</span> <span data-i18n="diet.VG">Vegan</span></button>
+            <button type="button" class="chip" data-filter="GF" aria-pressed="false"><span class="tag tag-GF">GF</span> <span data-i18n="diet.GF">Gluten-free</span></button>
+          </div>
+        </div>
+
+        <p class="menu-hint" id="menu-hint" data-anim="fade">
+          <span class="hint-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.6l1.2-1.8h5.4L15.9 6h1.6A2.5 2.5 0 0 1 20 8.5v8a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="12.3" r="3.3" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></span>
+          <span data-i18n="menu.hint">Tap any dish to see a photo &amp; details</span>
+        </p>
+
+        <div class="menu-sheet glass">
+          <div class="menu-panel" id="menu-panel" role="tabpanel" tabindex="0"></div>
+          <p class="menu-note" data-i18n="menu.note">Please let our team know about any allergies. Prices include VAT.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ GALLERY ============ -->
+    <section class="section gallery" id="gallery" aria-labelledby="gallery-title">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow" data-anim="fade" data-i18n="gallery.eyebrow">A look inside</p>
+          <h2 id="gallery-title" class="section-title" data-split data-i18n="gallery.title">Moments at Olive &amp; Oat</h2>
+        </div>
+        <div class="gallery-grid" id="gallery-grid"></div>
+      </div>
+    </section>
+
+    <!-- ============ REVIEWS ============ -->
+    <section class="section reviews" id="reviews" aria-labelledby="reviews-title">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow" data-anim="fade" data-i18n="reviews.eyebrow">Kind words</p>
+          <h2 id="reviews-title" class="section-title" data-split data-i18n="reviews.title">What our guests say</h2>
+          <p class="rating-summary" data-anim="fade"><span class="stars" aria-hidden="true">★★★★★</span> <strong>4.9</strong> · <span data-i18n="reviews.count">320+ reviews</span></p>
+        </div>
+        <div class="review-slider glass" data-anim="fade" aria-roledescription="carousel" aria-label="Guest reviews">
+          <div class="review-stage" id="review-stage" aria-live="polite"></div>
+          <div class="slider-controls">
+            <button type="button" class="slider-btn" id="review-prev" aria-label="Previous review">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="slider-count"><span id="review-current">01</span><span class="slider-bar"><span id="review-progress"></span></span><span id="review-total">04</span></div>
+            <button type="button" class="slider-btn" id="review-next" aria-label="Next review">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ RESERVATION ============ -->
+    <section class="section reserve" id="reserve" aria-labelledby="reserve-title">
+      <div class="reserve-bg" aria-hidden="true"></div>
+      <div class="container reserve-grid">
+        <div class="reserve-intro">
+          <p class="eyebrow eyebrow-light" data-anim="fade" data-i18n="reserve.eyebrow">Reservations</p>
+          <h2 id="reserve-title" class="section-title" data-split data-i18n="reserve.title">Save your seat</h2>
+          <p data-anim="fade" data-i18n="reserve.lead">Weekend brunch fills up fast.</p>
+          <a class="reserve-phone" data-anim="fade" href="tel:+35722123456">+357 22 123 456</a>
+        </div>
+
+        <form class="reserve-form" id="reserve-form" data-anim="rise" novalidate>
+          <div class="field">
+            <label for="r-name" data-i18n="form.name">Full name</label>
+            <input id="r-name" name="name" type="text" autocomplete="name" required>
+            <p class="error" data-i18n="form.err.name">Please enter your name.</p>
+          </div>
+          <div class="field-row two">
+            <div class="field">
+              <label for="r-phone" data-i18n="form.phone">Phone</label>
+              <input id="r-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+357 99 000000" required>
+              <p class="error" data-i18n="form.err.phone">Please enter a valid phone number.</p>
+            </div>
+            <div class="field">
+              <label for="r-email" data-i18n="form.email">Email (optional)</label>
+              <input id="r-email" name="email" type="email" autocomplete="email">
+              <p class="error" data-i18n="form.err.email">Please enter a valid email.</p>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="r-date" data-i18n="form.date">Date</label>
+              <input id="r-date" name="date" type="date" required>
+              <p class="error" data-i18n="form.err.date">Please choose a date.</p>
+            </div>
+            <div class="field">
+              <label for="r-time" data-i18n="form.time">Time</label>
+              <select id="r-time" name="time" required></select>
+              <p class="error" data-i18n="form.err.time">Please choose a time.</p>
+            </div>
+            <div class="field">
+              <label for="r-guests" data-i18n="form.guests">Guests</label>
+              <select id="r-guests" name="guests" required></select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="r-notes" data-i18n="form.notes">Special requests (optional)</label>
+            <textarea id="r-notes" name="notes" rows="3" data-i18n-placeholder="form.notesPh" placeholder="Birthday, high chair, outdoor table…"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block" data-i18n="form.submit">Request booking</button>
+          <p class="form-hint" data-i18n="form.hint">Demo form — no real booking is sent.</p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ============ VISIT ============ -->
+    <section class="section visit" id="visit" aria-labelledby="visit-title">
+      <div class="container visit-grid">
+        <div class="visit-info glass">
+          <p class="eyebrow" data-anim="fade" data-i18n="visit.eyebrow">Find us</p>
+          <h2 id="visit-title" class="section-title" data-split data-i18n="visit.title">Come say hello</h2>
+
+          <div data-anim="stagger">
+            <div class="info-block">
+              <h3 data-i18n="visit.address">Address</h3>
+              <p>27 Stasikratous Street<br><span data-i18n="visit.city">1065 Nicosia, Cyprus</span></p>
+              <a class="link-arrow" href="https://www.google.com/maps/search/?api=1&query=Stasikratous+Street+Nicosia" target="_blank" rel="noopener"><span data-i18n="visit.directions">Get directions</span> <span aria-hidden="true">→</span></a>
+            </div>
+
+            <div class="info-block">
+              <h3 data-i18n="visit.hours">Opening hours</h3>
+              <table class="hours" id="hours-table"><tbody></tbody></table>
+            </div>
+
+            <div class="info-block">
+              <h3 data-i18n="visit.contact">Contact</h3>
+              <p><a href="tel:+35722123456">+357 22 123 456</a><br><a href="mailto:hello@oliveandoat.cy">hello@oliveandoat.cy</a></p>
+              <div class="socials">
+                <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/></svg></a>
+                <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8h3V4h-3c-2.8 0-4.5 1.8-4.5 4.6V11H7v4h2.5v6h4v-6h3l.5-4h-3.5V9c0-.6.4-1 1-1z" fill="currentColor"/></svg></a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="map-wrap img-reveal">
+          <iframe title="Map showing Olive & Oat location in Nicosia" src="https://www.google.com/maps?q=Stasikratous+Street+Nicosia+Cyprus&z=16&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <p class="footer-tag" data-i18n="footer.tag">Brunch &amp; specialty coffee in the heart of Nicosia.</p>
+        <form class="newsletter" id="newsletter" novalidate>
+          <label for="nl-email" data-i18n="footer.nl">Get our seasonal menu & events in your inbox</label>
+          <div class="nl-row">
+            <input id="nl-email" type="email" placeholder="you@example.com" autocomplete="email" required>
+            <button type="submit" class="btn btn-primary btn-sm" data-i18n="footer.nlBtn">Subscribe</button>
+          </div>
+          <p class="nl-msg" id="nl-msg" aria-live="polite"></p>
+        </form>
+      </div>
+      <div class="footer-links">
+        <ul>
+          <li><a href="#about" data-i18n="nav.about">Our Story</a></li>
+          <li><a href="#menu" data-i18n="nav.menu">Menu</a></li>
+          <li><a href="#gallery" data-i18n="nav.gallery">Gallery</a></li>
+          <li><a href="#reserve" data-i18n="nav.book">Book a table</a></li>
+        </ul>
+        <ul>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Facebook</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-wordmark" aria-hidden="true">Olive <em>&amp;</em> Oat</div>
+    <div class="container footer-bottom">
+      <p>© <span id="year"></span> Olive &amp; Oat. <span data-i18n="footer.rights">All rights reserved.</span></p>
+      <p class="credit"><span data-i18n="footer.credit">Website by</span> <button type="button" class="credit-link" data-hire>Aristeidis Kamaritis</button></p>
+      <button type="button" class="to-top" id="to-top"><span data-i18n="footer.top">Back to top</span> <span aria-hidden="true">↑</span></button>
+    </div>
+  </footer>
+
+  <!-- "Want a site like this?" — designer contact -->
+  <button type="button" class="btn hire-fab" id="hire-fab" data-hire aria-haspopup="dialog" aria-controls="hire-panel" data-i18n="hire.fab">Want a site like this?</button>
+
+  <div class="hire" id="hire-panel" role="dialog" aria-modal="true" aria-labelledby="hire-title" hidden>
+    <div class="hire-backdrop"></div>
+    <div class="hire-card">
+      <button type="button" class="hire-close" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+      <div class="hire-head">
+        <span class="hire-avatar" aria-hidden="true">AK</span>
+        <div>
+          <p class="hire-eyebrow" data-i18n="hire.eyebrow">Freelance web designer · Cyprus</p>
+          <h3 id="hire-title">Aristeidis Kamaritis</h3>
+        </div>
+      </div>
+      <p class="hire-text" data-i18n="hire.text">I design and build fast, modern websites for Cyprus businesses — just like this one. Let's talk about yours.</p>
+      <ul class="hire-list">
+        <li>
+          <a class="hire-item" href="https://aristidiskamaritis.github.io/" target="_blank" rel="noopener">
+            <span class="hire-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 9h18" stroke="currentColor" stroke-width="1.8"/></svg></span>
+            <span><strong data-i18n="hire.site">See my work and prices</strong><small>aristidiskamaritis.github.io</small></span>
+            <span class="hire-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li>
+          <a class="hire-item" href="tel:+35796272170">
+            <span class="hire-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z" fill="currentColor"/></svg></span>
+            <span><strong>+357 96 272170</strong><small data-i18n="hire.callHint">Call me</small></span>
+            <span class="hire-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+        <li>
+          <a class="hire-item" id="hire-email" href="mailto:aristidiskamaritis@gmail.com">
+            <span class="hire-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
+            <span><strong>aristidiskamaritis@gmail.com</strong><small data-i18n="hire.emailHint">Send me an email</small></span>
+            <span class="hire-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+      </ul>
+      <p class="hire-foot" data-i18n="hire.foot">Olive &amp; Oat is a demo restaurant created to showcase my work.</p>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer" hidden>
+    <div class="lb-backdrop"></div>
+    <button class="lb-close" type="button" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+    <button class="lb-nav lb-prev" type="button" aria-label="Previous image"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <figure class="lb-figure"><div class="lb-frame"><img alt=""></div><figcaption></figcaption></figure>
+    <button class="lb-nav lb-next" type="button" aria-label="Next image"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  </div>
+
+  <!-- Dish details (opened from the menu) -->
+  <div class="dish" id="dish" role="dialog" aria-modal="true" aria-labelledby="dish-name" hidden>
+    <div class="dish-backdrop"></div>
+    <article class="dish-card">
+      <button class="dish-close" type="button" data-i18n-label="dish.close" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+      <div class="dish-media"><img alt=""></div>
+      <div class="dish-body">
+        <p class="eyebrow dish-cat"></p>
+        <h3 id="dish-name"></h3>
+        <div class="dish-tags"></div>
+        <p class="dish-desc"></p>
+        <p class="dish-plate"><strong data-i18n="dish.plate">On the plate</strong><span></span></p>
+        <div class="dish-foot">
+          <span class="price"></span>
+          <div class="dish-nav">
+            <button type="button" class="dish-prev" data-i18n-label="dish.prev" aria-label="Previous dish"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <span class="dish-count"></span>
+            <button type="button" class="dish-next" data-i18n-label="dish.next" aria-label="Next dish"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <!-- Booking confirmation -->
+  <div class="modal" id="booking-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+    <div class="modal-backdrop"></div>
+    <div class="modal-card">
+      <svg class="modal-check" viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="32" cy="32" r="30" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M20 33l8 8 16-17" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h3 id="modal-title" data-i18n="modal.title">Thank you!</h3>
+      <p id="modal-text"></p>
+      <button type="button" class="btn btn-primary" id="modal-close" data-i18n="modal.close">Done</button>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+  <script src="js/data.js?v=2" defer></script>
+  <script src="js/main.js?v=2" defer></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+.netlify/
+.claude/
+netlify.toml
+olive-and-oat.html
+videos/playground-result-*.mp4
+videos/hero.mp4
