@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Orders · Olive &amp; Oat</title>
+  <link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wght@400&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css?v=1">
+</head>
+<body>
+  <!-- Login -->
+  <main class="login" id="login" hidden>
+    <form class="login-card" id="login-form">
+      <h1>Olive <em>&amp;</em> Oat</h1>
+      <p>Staff sign-in for online orders</p>
+      <label for="pw">Password</label>
+      <input id="pw" type="password" autocomplete="current-password" required>
+      <p class="login-err" id="login-err" hidden></p>
+      <button type="submit">Sign in</button>
+    </form>
+  </main>
+
+  <!-- Orders board -->
+  <div class="app" id="app" hidden>
+    <header class="top">
+      <h1>Olive <em>&amp;</em> Oat <span>Orders</span></h1>
+      <label class="switch" title="Turn off to stop new online orders (e.g. when the kitchen is too busy)">
+        <input type="checkbox" id="accepting">
+        <span class="switch-ui"></span>
+        <span class="switch-text" id="accepting-text">Taking orders</span>
+      </label>
+      <button type="button" class="ghost" id="sound">🔔 Sound on</button>
+      <button type="button" class="ghost" id="logout">Sign out</button>
+    </header>
+
+    <nav class="tabs" role="tablist">
+      <button type="button" role="tab" data-tab="active" aria-selected="true">Active <b id="n-active">0</b></button>
+      <button type="button" role="tab" data-tab="done" aria-selected="false">Done <b id="n-done">0</b></button>
+      <button type="button" role="tab" data-tab="menu" aria-selected="false">Menu</button>
+    </nav>
+
+    <main class="board" id="board"></main>
+    <p class="updated" id="updated"></p>
+  </div>
+
+  <script src="../js/data.js"></script>
+  <script type="module" src="admin.mjs?v=1"></script>
+</body>
+</html>

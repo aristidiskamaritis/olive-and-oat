@@ -192,6 +192,7 @@
     fillGuests();
     fillTimes();
     updateHireLinks();
+    document.dispatchEvent(new CustomEvent("site:lang", { detail: lang }));
   }
 
   function setLanguage(next) {
@@ -310,6 +311,7 @@
             </div>
             <p>${esc(desc)}</p>
           </div>
+          <button type="button" class="add-btn" data-add="${it.id}" aria-label="${esc(t("order.add", { name }))}"><span class="add-icon" aria-hidden="true"></span><span class="add-label"></span></button>
         </div>`;
     }).join("") : `<p class="menu-empty">${esc(t("menu.empty"))}</p>`;
   }
@@ -411,6 +413,7 @@
     $(".dish-foot .price", dish).textContent = euro(it.price);
     $(".dish-count", dish).textContent = `${dishIdx + 1} / ${dishList.length}`;
     $(".dish-nav", dish).hidden = dishList.length < 2;
+    dish.dataset.item = it.id;
     dishImg.alt = name;
   }
 
@@ -487,6 +490,7 @@
   }
 
   panel.addEventListener("click", (e) => {
+    if (e.target.closest("[data-add]")) return; // "add to order" is handled by ordering/ordering.mjs
     const item = e.target.closest(".menu-item");
     if (item) openDish(+item.dataset.idx);
   });

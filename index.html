@@ -26,6 +26,7 @@
   <link rel="preload" as="image" href="images/film-poster.jpg" fetchpriority="high">
 
   <link rel="stylesheet" href="css/style.css?v=3">
+  <link rel="stylesheet" href="ordering/ordering.css?v=1">
 
   <script>
     document.documentElement.classList.add("js");
@@ -95,6 +96,10 @@
           <button type="button" data-lang="en" aria-pressed="true">EN</button>
           <button type="button" data-lang="el" aria-pressed="false">ΕΛ</button>
         </div>
+        <button type="button" class="cart-btn" id="cart-btn" data-order-only aria-haspopup="dialog" aria-controls="cart" data-i18n-label="order.open" aria-label="Your order">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1.2 11.1a2 2 0 0 1-2 1.9H8.2a2 2 0 0 1-2-1.9z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 10V7a3 3 0 0 1 6 0v3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <span class="cart-count" hidden>0</span>
+        </button>
         <a href="#reserve" class="btn btn-primary btn-sm header-cta" data-i18n="nav.book">Book a table</a>
         <button class="nav-toggle" type="button" aria-controls="main-nav" aria-expanded="false" aria-label="Open menu">
           <span></span><span></span>
@@ -120,7 +125,8 @@
         <p class="hero-lead" data-i18n="hero.lead">Specialty coffee, all-day breakfast and Cypriot-inspired brunch in the heart of Nicosia.</p>
         <div class="hero-ctas">
           <a href="#reserve" class="btn btn-primary" data-i18n="hero.cta1">Book a table</a>
-          <a href="#menu" class="btn btn-ghost-light" data-i18n="hero.cta2">See the menu</a>
+          <a href="#menu" class="btn btn-ghost-light" data-order-hide data-i18n="hero.cta2">See the menu</a>
+          <a href="#menu" class="btn btn-ghost-light" data-order-only data-i18n="order.heroCta">Order for pickup</a>
         </div>
       </div>
     </section>
@@ -484,6 +490,7 @@
         <div class="dish-tags"></div>
         <p class="dish-desc"></p>
         <p class="dish-plate"><strong data-i18n="dish.plate">On the plate</strong><span></span></p>
+        <button type="button" class="btn btn-primary dish-add" data-order-only data-add-current><span data-i18n="order.addToOrder">Add to order</span></button>
         <div class="dish-foot">
           <span class="price"></span>
           <div class="dish-nav">
@@ -512,7 +519,9 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
-  <script src="js/data.js?v=3" defer></script>
-  <script src="js/main.js?v=3" defer></script>
+  <script src="js/data.js?v=4" defer></script>
+  <script src="js/main.js?v=4" defer></script>
+  <!-- Online ordering: shows itself only when the ordering server answers (not on a plain static host) -->
+  <script type="module" src="ordering/ordering.mjs?v=1"></script>
 </body>
 </html>

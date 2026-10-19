@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Test payment</title>
+  <!-- Stands in for Stripe's payment page while the site runs in demo mode (DEMO_PAYMENTS=true). No money moves. -->
+  <style>
+    :root { --ink: #1a1f36; --muted: #697386; --line: #e3e8ee; --accent: #635bff; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink); background: #f6f9fc; display: grid; place-items: center; padding: 16px; }
+    .card { width: min(440px, 100%); background: #fff; border-radius: 12px; box-shadow: 0 15px 35px rgba(50, 50, 93, .1), 0 5px 15px rgba(0, 0, 0, .07); overflow: hidden; }
+    .banner { background: #fff4e5; color: #8a4b00; padding: 10px 20px; font-size: 13px; font-weight: 600; text-align: center; }
+    .inner { padding: 24px; }
+    h1 { font-size: 15px; color: var(--muted); font-weight: 500; margin: 0 0 4px; }
+    .amount { font-size: 34px; font-weight: 700; margin: 0 0 18px; }
+    ul { list-style: none; margin: 0 0 20px; padding: 0; border-top: 1px solid var(--line); }
+    li { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+    label { display: block; font-size: 13px; color: var(--muted); margin: 0 0 6px; }
+    .fake { border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; color: var(--muted); margin-bottom: 16px; font-variant-numeric: tabular-nums; }
+    button { width: 100%; padding: 13px; border: 0; border-radius: 6px; font: 600 16px system-ui, sans-serif; cursor: pointer; }
+    .pay { background: var(--accent); color: #fff; }
+    .pay:disabled { opacity: .6; }
+    .cancel { background: none; color: var(--muted); margin-top: 8px; }
+    .err { color: #c0392b; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <p class="banner">Test payment page. No real money is charged.</p>
+    <div class="inner">
+      <h1 id="title">Order</h1>
+      <p class="amount" id="amount">…</p>
+      <ul id="lines"></ul>
+      <label>Card details</label>
+      <div class="fake">4242 4242 4242 4242 · 12/34 · 123</div>
+      <button class="pay" id="pay" disabled>Pay</button>
+      <button class="cancel" id="cancel">Cancel and go back</button>
+      <p class="err" id="err" hidden></p>
+    </div>
+  </main>
+  <script type="module">
+    const site = new URL("../", location.href);
+    const api = new URL("api/", site);
+    const id = new URLSearchParams(location.search).get("order") || "";
+    const eur = (c) => "€" + (c / 100).toFixed(2);
+    const fail = (msg) => { const e = document.getElementById("err"); e.textContent = msg; e.hidden = false; };
+
+    const res = await fetch(new URL(`order?id=${encodeURIComponent(id)}`, api), { cache: "no-store" });
+    if (!res.ok) fail("Order not found.");
+    else {
+      const o = await res.json();
+      document.getElementById("title").textContent = `Olive & Oat · Order #${o.number}`;
+      document.getElementById("amount").textContent = eur(o.total);
+      document.getElementById("lines").innerHTML = o.items.map((l) => `<li><span>${l.qty} × ${l.name.en}</span></li>`).join("")
+        + (o.deliveryFee ? `<li><span>Delivery</span><span>${eur(o.deliveryFee)}</span></li>` : "");
+      const pay = document.getElementById("pay");
+      pay.textContent = `Pay ${eur(o.total)}`;
+      pay.disabled = o.status !== "pending_payment";
+      pay.onclick = async () => {
+        pay.disabled = true;
+        pay.textContent = "Processing…";
+        await new Promise((r) => setTimeout(r, 900));
+        const r = await fetch(new URL("demo-pay", api), { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id }) });
+        if (r.ok) location.href = new URL(`?order=${id}`, site).href;
+        else { fail("Payment failed."); pay.disabled = false; }
+      };
+    }
+    document.getElementById("cancel").onclick = () => { location.href = new URL("?checkout=cancelled#menu", site).href; };
+  </script>
+</body>
+</html>
