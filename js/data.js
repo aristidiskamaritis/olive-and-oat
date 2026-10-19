@@ -35,6 +35,9 @@ const ORDERING = {
     postcodes: ["10", "11"], // postcodes starting with these (central Nicosia); [] = deliver anywhere
   },
   payLater: true,         // also allow "pay at the counter" / "pay on delivery"
+  // Without the ordering server (e.g. on GitHub Pages): true = show the cart anyway as a
+  // non-working preview; false = hide ordering completely. Use false on a real client's site.
+  previewWithoutServer: true,
 };
 
 const I18N = {
@@ -215,6 +218,8 @@ const I18N = {
     "order.minOrder": "Delivery starts at {min}. Add {more} more, or choose pickup.",
     "order.freeOver": "Free delivery on orders over {amount}.",
     "order.demo": "Demo mode: no real payment is taken.",
+    "order.previewNote": "Demo website: try the cart and checkout, but no order is sent.",
+    "order.preview": "This is a demo website, so your order wasn't sent. On a real café's site, this button takes you to secure payment and the café gets your order straight away.",
     "order.err.street": "Please enter your address.",
     "order.err.postcode": "Please enter a valid postcode.",
     "order.err.area": "Sorry, we don't deliver to that postcode yet. You can still order for pickup.",
@@ -423,6 +428,8 @@ const I18N = {
     "order.minOrder": "Η ελάχιστη παραγγελία για διανομή είναι {min}. Προσθέστε ακόμα {more} ή επιλέξτε παραλαβή.",
     "order.freeOver": "Δωρεάν διανομή για παραγγελίες άνω των {amount}.",
     "order.demo": "Demo: δεν γίνεται πραγματική χρέωση.",
+    "order.previewNote": "Demo ιστοσελίδα: δοκιμάστε το καλάθι και την ολοκλήρωση, αλλά καμία παραγγελία δεν αποστέλλεται.",
+    "order.preview": "Αυτή είναι demo ιστοσελίδα, οπότε η παραγγελία δεν στάλθηκε. Σε πραγματικό κατάστημα, αυτό το κουμπί σας πηγαίνει σε ασφαλή πληρωμή και το κατάστημα λαμβάνει αμέσως την παραγγελία.",
     "order.err.street": "Παρακαλώ γράψτε τη διεύθυνσή σας.",
     "order.err.postcode": "Παρακαλώ γράψτε έγκυρο ταχυδρομικό κώδικα.",
     "order.err.area": "Δυστυχώς δεν κάνουμε ακόμα διανομή σε αυτόν τον κώδικα. Μπορείτε να παραγγείλετε για παραλαβή.",

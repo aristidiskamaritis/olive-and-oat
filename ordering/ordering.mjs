@@ -232,6 +232,7 @@ function renderCheckout() {
 
   body.innerHTML = `${noticeHtml()}${pausedHtml()}
     ${config.demo ? `<p class="cart-notice demo">${esc(t("order.demo"))}</p>` : ""}
+    ${config.preview ? `<p class="cart-notice demo">${esc(t("order.previewNote"))}</p>` : ""}
     <form id="checkout-form" class="checkout" novalidate>
       ${types().length > 1 ? `
         <div class="seg" role="radiogroup">
@@ -321,6 +322,12 @@ async function submitOrder(form) {
   if (bad.length || notice) {
     if (notice) { $(".cart-notice.error", body)?.remove(); body.insertAdjacentHTML("afterbegin", noticeHtml()); body.scrollTop = 0; }
     bad[0]?.focus();
+    return;
+  }
+  if (config.preview) {
+    notice = { kind: "info", text: t("order.preview") };
+    renderCheckout();
+    body.scrollTop = 0;
     return;
   }
 
@@ -467,7 +474,11 @@ async function refreshConfig() {
 
 async function start() {
   const ok = await refreshConfig().catch(() => false);
-  if (!ok) return; // no ordering server here: leave the site as it was
+  if (!ok) {
+    // no ordering server here: hide ordering, or show it as a preview that sends nothing
+    if (!ORDERING.previewWithoutServer) return;
+    config = { card: true, demo: false, preview: true, payLater: ORDERING.payLater, paused: false, soldOut: [] };
+  }
   document.body.append(drawer, floatBtn);
   html.classList.add("ordering-on");
   $(".cf-label", floatBtn).textContent = t("order.open");
@@ -488,6 +499,6 @@ async function start() {
     openDrawer("cart");
   }
   // keep sold-out items and the pause switch fresh while the page is open
-  setInterval(async () => { if (await refreshConfig()) { syncMenuButtons(); if (!drawer.hidden && view === "cart") renderCart(); } }, 60000);
+  if (!config.preview) setInterval(async () => { if (await refreshConfig()) { syncMenuButtons(); if (!drawer.hidden && view === "cart") renderCart(); } }, 60000);
 }
 start();
