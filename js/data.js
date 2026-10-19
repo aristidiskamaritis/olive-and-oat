@@ -31,6 +31,8 @@ const I18N = {
     "status.today": "today",
     "status.tomorrow": "tomorrow",
 
+    "demo.title": "Demo website",
+    "demo.text": "Not a real café. Designed and built by AK Web Dev →",
     "hero.line1": "Slow mornings,",
     "hero.line2": "good coffee.",
     "hero.lead": "Specialty coffee, all-day breakfast and Cypriot-inspired brunch in the heart of Nicosia.",
@@ -165,6 +167,8 @@ const I18N = {
     "status.today": "σήμερα",
     "status.tomorrow": "αύριο",
 
+    "demo.title": "Demo ιστοσελίδα",
+    "demo.text": "Δεν είναι πραγματική καφετέρια. Σχεδιασμός και κατασκευή: AK Web Dev →",
     "hero.line1": "Αργά πρωινά,",
     "hero.line2": "καλός καφές.",
     "hero.lead": "Specialty καφές, πρωινό όλη μέρα και brunch με κυπριακή έμπνευση στην καρδιά της Λευκωσίας.",
