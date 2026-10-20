@@ -7,7 +7,7 @@
   <title>Orders · Olive &amp; Oat</title>
   <link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wght@400&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="admin.css?v=1">
+  <link rel="stylesheet" href="admin.css?v=2">
 </head>
 <body>
   <!-- Login -->
@@ -39,13 +39,16 @@
       <button type="button" role="tab" data-tab="active" aria-selected="true">Active <b id="n-active">0</b></button>
       <button type="button" role="tab" data-tab="done" aria-selected="false">Done <b id="n-done">0</b></button>
       <button type="button" role="tab" data-tab="menu" aria-selected="false">Menu</button>
+      <button type="button" role="tab" data-tab="tables" aria-selected="false">Table QR codes</button>
     </nav>
 
     <main class="board" id="board"></main>
     <p class="updated" id="updated"></p>
   </div>
 
-  <script src="../js/data.js"></script>
-  <script type="module" src="admin.mjs?v=1"></script>
+  <script src="../js/data.js?v=6"></script>
+  <!-- draws the table QR codes on the "Table QR codes" tab -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+  <script type="module" src="admin.mjs?v=3"></script>
 </body>
 </html>

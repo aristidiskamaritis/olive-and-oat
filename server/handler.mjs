@@ -8,7 +8,7 @@ import data from "../js/data.js";
 import { indexMenu, orderTimes, isValidTime, quote } from "../ordering/shared.mjs";
 import { getStore } from "./store.mjs";
 import { createCheckoutSession, verifyWebhook } from "./stripe.mjs";
-import { notifyNewOrder } from "./notify.mjs";
+import { notifyNewOrder, notifyRequest } from "./notify.mjs";
 
 const { MENU, HOURS, ORDERING } = data;
 const menuIndex = indexMenu(MENU);
@@ -36,10 +36,13 @@ export async function handle(req, env) {
       case "GET /order": return await orderStatus(ctx);
       case "POST /stripe-webhook": return await stripeWebhook(ctx);
       case "POST /demo-pay": return await demoPay(ctx);
+      case "POST /table-request": return await tableRequest(ctx);
       case "POST /admin/login": return await adminLogin(ctx);
       case "GET /admin/orders": await requireAdmin(ctx); return await adminOrders(ctx);
       case "POST /admin/status": await requireAdmin(ctx); return await adminStatus(ctx);
       case "POST /admin/availability": await requireAdmin(ctx); return await adminAvailability(ctx);
+      case "POST /admin/request-done": await requireAdmin(ctx); return await adminRequestDone(ctx);
+      case "GET /admin/tables": await requireAdmin(ctx); return await adminTables(ctx);
       default: throw new HttpError(404, "not_found");
     }
   } catch (err) {
@@ -63,9 +66,40 @@ async function getConfig({ env, store }) {
     card: mode !== "off",
     demo: mode === "demo",
     payLater: !!ORDERING.payLater,
+    table: !!(ORDERING.table && ORDERING.table.enabled && tableSecret(env)),
     paused: avail.paused,
     soldOut: avail.soldOut,
   });
+}
+
+/* ---------- Table (QR code) ordering ----------
+   Each table's QR code carries a short key signed with a secret, so an order or a
+   "call a waiter" request can only come from someone who scanned that table's code. */
+
+// TABLE_SECRET keeps printed QR codes valid even if the staff password changes
+const tableSecret = (env) => env.TABLE_SECRET || (env.ADMIN_PASSWORD ? `${env.ADMIN_PASSWORD}:tables` : "");
+const tableKey = async (env, n) => (await hmac(tableSecret(env), `table:${n}`)).slice(0, 16);
+
+async function checkTable(env, table, key) {
+  const n = Number(table);
+  if (!ORDERING.table?.enabled || !tableSecret(env)) throw new HttpError(400, "table_off");
+  if (!Number.isInteger(n) || n < 1 || n > ORDERING.table.tables) throw new HttpError(400, "table");
+  if (env.DEMO_PAYMENTS === "true" && !key) return n; // demo only: the "Try it as Table 5" link has no key
+  if (!(await sameText(String(key ?? ""), await tableKey(env, n)))) throw new HttpError(400, "table");
+  return n;
+}
+
+async function tableRequest({ req, env, store }) {
+  const b = await body(req);
+  const table = await checkTable(env, b.table, b.key);
+  const kind = b.kind === "bill" ? "bill" : "waiter";
+  // pressing the button twice doesn't send a second alert while the first is still open
+  const open = await store.listRequests();
+  if (!open.some((r) => r.table === table && r.kind === kind)) {
+    const request = await store.createRequest({ id: crypto.randomUUID(), createdAt: new Date().toISOString(), table, kind });
+    await notifyRequest(request, env);
+  }
+  return json({ ok: true });
 }
 
 async function checkout({ req, env, url, store }) {
@@ -73,7 +107,8 @@ async function checkout({ req, env, url, store }) {
   const avail = await store.getSettings();
   if (avail.paused) throw new HttpError(409, "paused");
 
-  const type = b.type === "delivery" ? "delivery" : "pickup";
+  const type = ["delivery", "table"].includes(b.type) ? b.type : "pickup";
+  const table = type === "table" ? await checkTable(env, b.table, b.tableKey) : null;
   const cart = Array.isArray(b.items) ? b.items.slice(0, 60).map((l) => ({ id: str(l.id, 60), qty: Number(l.qty) })) : [];
   const address = type === "delivery"
     ? { street: str(b.address?.street, 120), postcode: str(b.address?.postcode, 10), notes: str(b.address?.notes, 200) }
@@ -82,13 +117,16 @@ async function checkout({ req, env, url, store }) {
   if (q.errors.length) throw new HttpError(400, q.errors[0]);
   if (address && address.street.length < 3) throw new HttpError(400, "street");
 
-  const times = orderTimes(HOURS, ORDERING, type);
-  const when = str(b.when, 20);
+  // table orders are for right now, while the kitchen is open; the others pick a time
+  const times = orderTimes(HOURS, ORDERING, type === "table" ? "pickup" : type);
+  const when = type === "table" ? "asap" : str(b.when, 20);
+  if (type === "table" && !times.openNow) throw new HttpError(409, "closed");
   if (!isValidTime(when, times)) throw new HttpError(400, "slot");
 
+  // guests at a table don't need to leave a name or phone number
   const customer = { name: str(b.customer?.name, 80), phone: str(b.customer?.phone, 30), email: str(b.customer?.email, 120) };
-  if (customer.name.length < 2) throw new HttpError(400, "name");
-  if (!/^[+0-9 ()-]{8,}$/.test(customer.phone)) throw new HttpError(400, "phone");
+  if (type !== "table" && customer.name.length < 2) throw new HttpError(400, "name");
+  if ((type !== "table" || customer.phone) && !/^[+0-9 ()-]{8,}$/.test(customer.phone)) throw new HttpError(400, "phone");
   if (customer.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customer.email)) throw new HttpError(400, "email");
 
   const mode = cardMode(env);
@@ -104,6 +142,7 @@ async function checkout({ req, env, url, store }) {
     payment,
     demo: payment === "card" && mode === "demo",
     type,
+    table,
     when,
     customer,
     address,
@@ -141,7 +180,7 @@ async function orderStatus({ url, store }) {
   const o = await store.get(id);
   if (!o) throw new HttpError(404, "not_found");
   return json({
-    number: o.number, status: o.status, type: o.type, when: o.when, payment: o.payment, paid: o.paid, demo: o.demo,
+    number: o.number, status: o.status, type: o.type, table: o.table, when: o.when, payment: o.payment, paid: o.paid, demo: o.demo,
     items: o.items.map(({ qty, name }) => ({ qty, name })), subtotal: o.subtotal, deliveryFee: o.deliveryFee, total: o.total,
   });
 }
@@ -218,8 +257,24 @@ async function requireAdmin({ req, env }) {
 
 async function adminOrders({ store }) {
   const since = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
-  const [orders, availability] = await Promise.all([store.list({ since }), store.getSettings()]);
-  return json({ orders, availability, serverTime: new Date().toISOString() });
+  const [orders, availability, requests] = await Promise.all([store.list({ since }), store.getSettings(), store.listRequests()]);
+  return json({ orders, availability, requests, serverTime: new Date().toISOString() });
+}
+
+async function adminRequestDone({ req, store }) {
+  const { id } = await body(req);
+  await store.closeRequest(String(id));
+  return json({ ok: true });
+}
+
+// links for each table's QR code; `site` is the page the codes should open (same site only)
+async function adminTables({ env, url }) {
+  if (!ORDERING.table?.enabled || !tableSecret(env)) throw new HttpError(400, "table_off");
+  let site = `${url.origin}/`;
+  try { const s = new URL(url.searchParams.get("site")); if (s.origin === url.origin) site = s.origin + s.pathname; } catch { /* keep default */ }
+  const tables = [];
+  for (let n = 1; n <= ORDERING.table.tables; n++) tables.push({ n, url: `${site}?table=${n}&key=${await tableKey(env, n)}` });
+  return json({ tables });
 }
 
 async function adminStatus({ req, store }) {

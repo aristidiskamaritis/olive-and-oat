@@ -16,14 +16,14 @@ function whenText(order) {
 export function orderText(order) {
   const lines = [
     `${order.demo ? "[DEMO] " : ""}New order #${order.number}`,
-    `${order.type === "delivery" ? "Delivery" : "Pickup"}: ${whenText(order)}`,
+    order.type === "table" ? `TABLE ${order.table}` : `${order.type === "delivery" ? "Delivery" : "Pickup"}: ${whenText(order)}`,
     "",
     ...order.items.map((l) => `${l.qty} × ${l.name.en}`),
     "",
     order.deliveryFee ? `Delivery fee ${eur(order.deliveryFee)}` : null,
-    `Total ${eur(order.total)}: ${order.payment === "card" ? (order.demo ? "test payment, not real money" : "PAID online") : "TO PAY on " + order.type}`,
+    `Total ${eur(order.total)}: ${order.payment === "card" ? (order.demo ? "test payment, not real money" : "PAID online") : (order.type === "table" ? "TO PAY at the end" : "TO PAY on " + order.type)}`,
     "",
-    `${order.customer.name} · ${order.customer.phone}`,
+    order.customer.name || order.customer.phone ? [order.customer.name, order.customer.phone].filter(Boolean).join(" · ") : null,
     order.address ? `${order.address.street}, ${order.address.postcode}${order.address.notes ? ` (${order.address.notes})` : ""}` : null,
     order.notes ? `Note: ${order.notes}` : null,
   ];
@@ -54,6 +54,13 @@ function customerText(order) {
   return el
     ? `Ευχαριστούμε! Λάβαμε την παραγγελία σας #${order.number}.\n\n${items}\n\nΣύνολο ${eur(order.total)}`
     : `Thank you! We've received your order #${order.number}.\n\n${items}\n\nTotal ${eur(order.total)}`;
+}
+
+// "Call a waiter" / "bill please" from a table: Telegram only, because it has to be seen within a minute
+export async function notifyRequest(request, env) {
+  const text = request.kind === "bill" ? `🧾 Table ${request.table} asks for the bill` : `🔔 Table ${request.table} is calling a waiter`;
+  if (!(env.TELEGRAM_BOT_TOKEN && env.TELEGRAM_CHAT_ID)) { console.log(`\n[table request] ${text}\n`); return; }
+  try { await telegram(env, text); } catch (err) { console.error("[ordering] telegram failed:", err.message); }
 }
 
 export async function notifyNewOrder(order, env) {

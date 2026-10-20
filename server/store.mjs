@@ -68,6 +68,20 @@ function fileStore(dir) {
       await write("settings", next);
       return next;
     }),
+    // "call a waiter" / "bill please" from a table; open until staff tap Done
+    createRequest: (request) => locked(async () => {
+      const list = await read("requests", []);
+      list.push({ ...request, done: false });
+      await write("requests", list.slice(-500));
+      return request;
+    }),
+    listRequests: async () => (await read("requests", []))
+      .filter((r) => !r.done && r.createdAt >= new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString()),
+    closeRequest: (id) => locked(async () => {
+      const list = await read("requests", []);
+      list.forEach((r) => { if (r.id === id) r.done = true; });
+      await write("requests", list);
+    }),
   };
 }
 
@@ -121,5 +135,13 @@ function supabaseStore(env) {
       });
       return value;
     },
+    createRequest: async (r) => {
+      await call("/requests", { method: "POST", body: JSON.stringify({ id: r.id, created_at: r.createdAt, table_no: r.table, kind: r.kind }) });
+      return r;
+    },
+    listRequests: async () => (await call(
+      `/requests?select=*&done=eq.false&created_at=gte.${encodeURIComponent(new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString())}&order=created_at.asc`,
+    )).map((r) => ({ id: r.id, createdAt: r.created_at, table: r.table_no, kind: r.kind })),
+    closeRequest: (id) => call(`/requests?id=eq.${encodeURIComponent(id)}`, { method: "PATCH", body: JSON.stringify({ done: true }) }),
   };
 }

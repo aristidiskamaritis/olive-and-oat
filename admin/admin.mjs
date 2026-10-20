@@ -1,7 +1,9 @@
 /* =========================================================
    Staff orders board: new orders appear by themselves (with a sound),
    staff move them through preparing → ready → completed, and can mark
-   dishes sold out or pause online ordering.
+   dishes sold out or pause online ordering. Tables calling a waiter or
+   asking for the bill show at the top, and the Tables tab prints each
+   table's QR code.
    ========================================================= */
 import { indexMenu } from "../ordering/shared.mjs";
 
@@ -16,6 +18,8 @@ let token = sessionStorage.getItem("oo-admin") || "";
 let tab = "active";
 let orders = [];
 let availability = { paused: false, soldOut: [] };
+let requests = [];
+let tableLinks = null;           // [{ n, url }] once the Tables tab has been opened
 let seen = null;                 // order ids already shown, so only really new ones ring
 let soundOn = localStorage.getItem("oo-admin-sound") !== "off";
 let timer = null;
@@ -72,9 +76,10 @@ async function refresh() {
     const data = await call("admin/orders");
     orders = data.orders;
     availability = data.availability;
-    const fresh = orders.filter((o) => o.status === "new" && seen && !seen.has(o.id));
+    requests = data.requests || [];
+    const fresh = [...orders.filter((o) => o.status === "new"), ...requests].filter((x) => seen && !seen.has(x.id));
     if (fresh.length) ring();
-    seen = new Set(orders.map((o) => o.id));
+    seen = new Set([...orders, ...requests].map((x) => x.id));
     render();
     $("#updated").textContent = `Updated ${new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" })} · refreshes every 10 seconds`;
   } catch (err) {
@@ -96,8 +101,8 @@ function start() {
 
 let audio = null;
 function ring() {
-  const waiting = orders.filter((o) => o.status === "new").length;
-  document.title = `(${waiting}) New order · Olive & Oat`;
+  const waiting = orders.filter((o) => o.status === "new").length + requests.length;
+  document.title = `(${waiting}) New · Olive & Oat`;
   if (!soundOn) return;
   try {
     audio = audio || new AudioContext();
@@ -131,9 +136,11 @@ const NEXT = {
   preparing: ["ready", "Ready"],
   ready: ["completed", "Completed"],
 };
+const NEXT_TABLE = { ...NEXT, ready: ["completed", "Served"] };
 const LABEL = { new: "New", preparing: "Preparing", ready: "Ready", completed: "Completed", cancelled: "Cancelled" };
 
 function whenText(o) {
+  if (o.type === "table") return "now";
   if (o.when === "asap") return "ASAP";
   const [date, time] = o.when.split("T");
   const today = new Date().toLocaleDateString("en-CA");
@@ -144,19 +151,20 @@ const dueAt = (o) => o.when === "asap" ? o.createdAt : new Date(o.when).toISOStr
 const placed = (o) => new Date(o.createdAt).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
 
 function card(o) {
-  const next = NEXT[o.status];
+  const next = (o.type === "table" ? NEXT_TABLE : NEXT)[o.status];
+  const type = o.type === "table" ? `Table ${o.table}` : o.type === "delivery" ? "Delivery" : "Pickup";
   return `
     <article class="order st-${o.status}">
       <header>
         <span class="num">#${o.number}</span>
         <span class="badge">${LABEL[o.status]}</span>
-        <span class="type ${o.type}">${o.type === "delivery" ? "Delivery" : "Pickup"} · <strong>${esc(whenText(o))}</strong></span>
+        <span class="type ${o.type}">${type} · <strong>${esc(whenText(o))}</strong></span>
       </header>
       <ul class="items">${o.items.map((l) => `<li><b>${l.qty}×</b> ${esc(l.name.en)}</li>`).join("")}</ul>
       ${o.notes ? `<p class="note">📝 ${esc(o.notes)}</p>` : ""}
       <div class="who">
-        <span>${esc(o.customer.name)}</span>
-        <a href="tel:${esc(o.customer.phone.replace(/[^+0-9]/g, ""))}">${esc(o.customer.phone)}</a>
+        ${o.customer.name ? `<span>${esc(o.customer.name)}</span>` : ""}
+        ${o.customer.phone ? `<a href="tel:${esc(o.customer.phone.replace(/[^+0-9]/g, ""))}">${esc(o.customer.phone)}</a>` : ""}
         ${o.address ? `<span class="addr">📍 ${esc(o.address.street)}, ${esc(o.address.postcode)}${o.address.notes ? ` · ${esc(o.address.notes)}` : ""}</span>` : ""}
       </div>
       <footer>
@@ -176,6 +184,7 @@ function render() {
   const done = orders.filter((o) => !ACTIVE.includes(o.status));
   $("#n-active").textContent = active.length;
   $("#n-done").textContent = done.length;
+  $("#n-active").textContent = active.length + requests.length;
   $("#accepting").checked = !availability.paused;
   $("#accepting-text").textContent = availability.paused ? "Orders paused" : "Taking orders";
   document.body.classList.toggle("paused", availability.paused);
@@ -198,10 +207,44 @@ function render() {
       </section>`).join("");
     return;
   }
+  if (tab === "tables") { renderTables(board); return; }
   const list = tab === "active" ? active : done;
   board.className = "board";
-  board.innerHTML = list.length ? list.map(card).join("")
-    : `<p class="empty">${tab === "active" ? "No open orders right now. New ones appear here by themselves." : "Nothing finished in the last 3 days."}</p>`;
+  const alerts = tab === "active" && requests.length ? `<div class="requests">${requests.map((r) => `
+      <div class="request ${r.kind}">
+        <span>${r.kind === "bill" ? "🧾" : "🔔"} <strong>Table ${r.table}</strong> ${r.kind === "bill" ? "asks for the bill" : "is calling a waiter"}</span>
+        <small>${placed(r)}</small>
+        <button type="button" data-request-done="${r.id}">Done</button>
+      </div>`).join("")}</div>` : "";
+  board.innerHTML = alerts + (list.length ? list.map(card).join("")
+    : `<p class="empty">${tab === "active" ? "No open orders right now. New ones appear here by themselves." : "Nothing finished in the last 3 days."}</p>`);
+}
+
+/* ---------- Table QR codes ---------- */
+
+async function renderTables(board) {
+  board.className = "board qr-board";
+  if (!tableLinks) {
+    board.innerHTML = `<p class="empty">Loading QR codes…</p>`;
+    try { tableLinks = (await call(`admin/tables?site=${encodeURIComponent(new URL("../", location.href).href)}`)).tables; }
+    catch { board.innerHTML = `<p class="empty">Table ordering is switched off. Turn it on in js/data.js (ORDERING.table).</p>`; return; }
+    if (tab !== "tables") return;
+  }
+  board.innerHTML = `
+    <div class="qr-head">
+      <p>Print these and put each one on its table. Guests scan it, order and pay from their phone, and the order shows here as that table.</p>
+      <button type="button" class="primary" id="print-qr">Print QR codes</button>
+    </div>
+    ${tableLinks.map((t) => `
+      <figure class="qr-card">
+        <div class="qr" data-url="${esc(t.url)}"></div>
+        <figcaption><strong>Table ${t.n}</strong><span>Scan to order · Σκανάρετε για παραγγελία</span></figcaption>
+      </figure>`).join("")}`;
+  if (typeof QRCode === "undefined") {
+    $$(".qr", board).forEach((el) => { el.textContent = el.dataset.url; el.classList.add("qr-text"); });
+    return;
+  }
+  $$(".qr", board).forEach((el) => new QRCode(el, { text: el.dataset.url, width: 168, height: 168, correctLevel: QRCode.CorrectLevel.M }));
 }
 
 /* ---------- Actions ---------- */
@@ -212,6 +255,14 @@ $(".tabs").addEventListener("click", (e) => {
 });
 
 $("#board").addEventListener("click", async (e) => {
+  const doneBtn = e.target.closest("[data-request-done]");
+  if (doneBtn) {
+    doneBtn.disabled = true;
+    try { await call("admin/request-done", { id: doneBtn.dataset.requestDone }); } catch { alert("Couldn't update. Check the connection and try again."); }
+    refresh();
+    return;
+  }
+  if (e.target.closest("#print-qr")) { window.print(); return; }
   const b = e.target.closest("button[data-status]");
   if (!b) return;
   const o = orders.find((x) => x.id === b.dataset.id);

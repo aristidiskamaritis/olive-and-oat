@@ -3,6 +3,14 @@
 Customers add dishes from the menu, choose pickup or delivery and a time, then pay online (Stripe) or pay at the counter / on delivery.
 The café gets a Telegram message and/or email for each order, and manages orders on a staff page at `/admin/`.
 
+**Table ordering (QR codes):** guests sitting in the café scan the QR code on their table, order from their phone, and pay online or at the end. The order shows on the staff page as "Table 5". Guests also get **Call a waiter** and **Ask for the bill** buttons, which alert staff on Telegram and at the top of the staff page. The café needs fewer waiters walking around taking orders.
+
+- Turn it on and set the number of tables in `js/data.js` → `ORDERING.table`.
+- Print the codes from the staff page → **Table QR codes** → **Print QR codes**.
+- Each code contains a signed key, so nobody can send orders or waiter calls to a table from outside the café. Set `TABLE_SECRET` **before** printing: if it changes, the printed codes stop working.
+- Table orders are only accepted while the kitchen is open (opening hours minus `lastOrderMinutes`).
+- On the demo site, `demoLink: true` shows a "Try it as Table 5" link. Set it to `false` for real clients.
+
 ---
 
 ## 1. Try it on your computer
@@ -63,7 +71,7 @@ Create every account **in the client's name** (their email). You get access, but
    The owner sends any message to the new bot. Then open `https://api.telegram.org/bot<TOKEN>/getUpdates` and copy the number after `"chat":{"id":` → `TELEGRAM_CHAT_ID`.
    For a staff group: add the bot to the group, send a message there, and use that chat id (it starts with `-`).
 5. **Email alerts** (optional): resend.com account, verify the client's domain → `RESEND_API_KEY`, `ORDER_EMAIL_FROM` (e.g. `orders@theircafe.cy`), `ORDER_EMAIL_TO`.
-6. **Staff password:** a strong `ADMIN_PASSWORD`, plus a long random `SESSION_SECRET`.
+6. **Staff password:** a strong `ADMIN_PASSWORD`, plus a long random `SESSION_SECRET`. If the client takes table ordering, also a long random `TABLE_SECRET`. Print the QR codes only after it's set, then laminate them or put them in table stands.
 7. Netlify → Site configuration → Environment variables: add everything above. **Don't** set `DEMO_PAYMENTS`. Redeploy.
 8. **Test with Stripe test cards:** `4242 4242 4242 4242`, any future date, any CVC. Check the order arrives on Telegram and at `/admin/`, and the customer's screen moves Received → Preparing → Ready.
 9. **Go live:** swap to the live `sk_live_…` key and make a **new live webhook** (live mode has its own `whsec_…`). Place one real €1–2 order and refund it from Stripe.

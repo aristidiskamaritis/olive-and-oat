@@ -37,10 +37,11 @@ let notice = null;
 let statusId = null;
 let statusTimer = null;
 let lastFocus = null;
+let table = null;                                             // { n, key } when the page was opened from a table's QR code
 
 const soldOut = (id) => config.soldOut.includes(id);
 const count = () => cart.reduce((n, l) => n + l.qty, 0);
-const types = () => ["pickup", "delivery"].filter((k) => ORDERING[k].enabled);
+const types = () => table ? ["table"] : ["pickup", "delivery"].filter((k) => ORDERING[k].enabled);
 const payments = () => [config.card && "card", config.payLater && "later"].filter(Boolean);
 const currentQuote = () => quote(cart, {
   menuIndex, settings: ORDERING, type: details.type,
@@ -91,7 +92,9 @@ function updateCartButtons() {
   badge.hidden = n === 0;
   badge.textContent = n;
   const float = $("#cart-float");
-  float.hidden = n === 0 || !drawer.hidden;
+  float.hidden = (n === 0 && !table) || !drawer.hidden;
+  float.classList.toggle("is-table", !!table);
+  $(".cf-label", float).textContent = table ? t("order.tableBar", { n: table.n }) : t("order.open");
   $(".cf-count", float).textContent = n;
   $(".cf-total", float).textContent = eur(currentQuote().subtotal);
 }
@@ -164,10 +167,18 @@ function render() {
   $(".cart-back", drawer).hidden = view !== "checkout";
   $(".cart-back", drawer).setAttribute("aria-label", t("order.back"));
   $(".cart-close", drawer).setAttribute("aria-label", t("order.close"));
-  $("#cart-title").textContent = view === "status" ? "" : t("order.title");
+  $("#cart-title").textContent = view === "status" ? "" : table ? t("order.tableTitle", { n: table.n }) : t("order.title");
   ({ cart: renderCart, checkout: renderCheckout, status: renderStatus })[view]();
 }
 
+const tableBarHtml = () => !table ? "" : `
+  <div class="table-bar">
+    <p>${esc(t("order.tableHint"))}</p>
+    <div class="table-actions">
+      <button type="button" class="btn btn-sm table-req" data-request="waiter">${esc(t("order.waiter"))}</button>
+      <button type="button" class="btn btn-sm table-req" data-request="bill">${esc(t("order.bill"))}</button>
+    </div>
+  </div>`;
 const noticeHtml = () => notice ? `<p class="cart-notice ${notice.kind}" role="alert">${esc(notice.text)}</p>` : "";
 const pausedHtml = () => config.paused ? `<p class="cart-notice error">${esc(t("order.paused"))}</p>` : "";
 const row = (label, value, cls = "") => `<div class="sum-row ${cls}"><span>${label}</span><span>${value}</span></div>`;
@@ -175,7 +186,7 @@ const row = (label, value, cls = "") => `<div class="sum-row ${cls}"><span>${lab
 function renderCart() {
   const q = currentQuote();
   if (!cart.length) {
-    body.innerHTML = `${noticeHtml()}${pausedHtml()}
+    body.innerHTML = `${tableBarHtml()}${noticeHtml()}${pausedHtml()}
       <div class="cart-empty">
         <p>${esc(t("order.empty"))}</p>
         <button type="button" class="btn btn-primary btn-sm" data-browse>${esc(t("order.browse"))}</button>
@@ -183,7 +194,7 @@ function renderCart() {
     foot.innerHTML = "";
     return;
   }
-  body.innerHTML = `${noticeHtml()}${pausedHtml()}
+  body.innerHTML = `${tableBarHtml()}${noticeHtml()}${pausedHtml()}
     <ul class="cart-lines">
       ${q.lines.map((l) => `
         <li class="cart-line${l.soldOut ? " is-sold-out" : ""}">
@@ -225,8 +236,12 @@ function field(name, label, { type = "text", value = "", auto = "", extra = "", 
 function renderCheckout() {
   if (!types().includes(details.type)) details.type = types()[0];
   if (!payments().includes(details.payment)) details.payment = payments()[0];
-  const times = orderTimes(HOURS, ORDERING, details.type);
+  const atTable = details.type === "table";
+  const times = orderTimes(HOURS, ORDERING, atTable ? "pickup" : details.type);
   if (!times.asap && details.when === "asap") details.when = null;
+  if (atTable) details.when = "asap";
+  // the demo preview sends nothing, so it lets you try table ordering at any hour
+  const tableClosed = atTable && !times.openNow && !config.preview;
   const first = times.slots[0];
   const delivery = details.type === "delivery";
 
@@ -239,13 +254,14 @@ function renderCheckout() {
           ${types().map((k) => `<label><input type="radio" name="type" value="${k}" ${details.type === k ? "checked" : ""}><span>${esc(t("order." + k))}</span></label>`).join("")}
         </div>` : ""}
 
-      ${!times.openNow && first ? `<p class="cart-notice info">${esc(t("order.preorder", {
+      ${tableClosed ? `<p class="cart-notice error">${esc(t("order.tableClosed"))}</p>` : ""}
+      ${!atTable && !times.openNow && first ? `<p class="cart-notice info">${esc(t("order.preorder", {
         day: first.offset === 0 ? t("status.today") : first.offset === 1 ? t("status.tomorrow") : t("days")[first.weekday], time: first.time,
       }))}</p>` : ""}
-      <div class="field">
+      <div class="field" ${atTable ? "hidden" : ""}>
         <label for="co-when">${esc(t("order.when"))}</label>
         <select id="co-when" name="when">
-          ${times.asap ? `<option value="asap">${esc(t("order.asap", { min: times.leadMinutes }))}</option>` : ""}
+          ${times.asap || atTable ? `<option value="asap">${esc(t("order.asap", { min: times.leadMinutes }))}</option>` : ""}
           ${times.slots.map((s) => `<option value="${s.value}" ${details.when === s.value ? "selected" : ""}>${esc(slotLabel(s.value))}</option>`).join("")}
         </select>
         <p class="error">${esc(t("order.err.slot"))}</p>
@@ -259,10 +275,12 @@ function renderCheckout() {
         ${field("addressNotes", t("order.addressNotes"), { value: details.addressNotes })}
       </div>
 
+      <div class="co-person" ${atTable ? "hidden" : ""}>
       ${field("name", t("form.name"), { value: details.name, auto: "name", error: t("form.err.name") })}
       <div class="field-row two">
         ${field("phone", t("form.phone"), { type: "tel", value: details.phone, auto: "tel", extra: 'inputmode="tel" placeholder="+357 99 000000"', error: t("form.err.phone") })}
         ${field("email", t("form.email"), { type: "email", value: details.email, auto: "email", error: t("form.err.email") })}
+      </div>
       </div>
       <div class="field">
         <label for="co-notes">${t("order.notes")}</label>
@@ -275,15 +293,15 @@ function renderCheckout() {
           <label class="pay-opt${details.payment === "card" ? " on" : ""}"><input type="radio" name="payment" value="card" ${details.payment === "card" ? "checked" : ""}>
             <span><strong>${esc(t("order.payCard"))}</strong><small>${esc(t("order.payCardSub"))}</small></span></label>
           <label class="pay-opt${details.payment === "later" ? " on" : ""}"><input type="radio" name="payment" value="later" ${details.payment === "later" ? "checked" : ""}>
-            <span><strong>${esc(t(delivery ? "order.payLaterDelivery" : "order.payLaterPickup"))}</strong><small>${esc(t("order.payLaterSub"))}</small></span></label>
+            <span><strong>${esc(t(atTable ? "order.payLaterTable" : delivery ? "order.payLaterDelivery" : "order.payLaterPickup"))}</strong><small>${esc(t(atTable ? "order.payLaterTableSub" : "order.payLaterSub"))}</small></span></label>
         </fieldset>` : ""}
     </form>`;
   if (details.when && $(`#co-when option[value="${details.when}"]`)) $("#co-when").value = details.when;
   details.when = $("#co-when").value || null;
-  renderCheckoutFoot();
+  renderCheckoutFoot(tableClosed);
 }
 
-function renderCheckoutFoot() {
+function renderCheckoutFoot(blocked = false) {
   const q = currentQuote();
   const delivery = details.type === "delivery";
   const d = ORDERING.delivery;
@@ -295,7 +313,7 @@ function renderCheckoutFoot() {
     ${delivery ? row(t("order.subtotal"), eur(q.subtotal)) + row(t("order.deliveryFee"), q.deliveryFee ? eur(q.deliveryFee) : t("order.free")) : ""}
     ${row(t("order.total"), eur(q.total), "total")}
     ${hint ? `<p class="cart-hint">${esc(hint)}</p>` : ""}
-    <button type="submit" form="checkout-form" class="btn btn-primary btn-block" ${config.paused || q.missing > 0 || !$("#co-when").value ? "disabled" : ""}>${esc(t(label, { total: eur(q.total) }))}</button>`;
+    <button type="submit" form="checkout-form" class="btn btn-primary btn-block" ${blocked || config.paused || q.missing > 0 || !$("#co-when").value ? "disabled" : ""}>${esc(t(label, { total: eur(q.total) }))}</button>`;
 }
 
 const checks = {
@@ -336,7 +354,8 @@ async function submitOrder(form) {
   btn.textContent = t("order.sending");
   const order = {
     items: cart, type: details.type, when: details.when, payment: details.payment, lang: lang(),
-    customer: { name: details.name, phone: details.phone, email: details.email },
+    customer: table ? {} : { name: details.name, phone: details.phone, email: details.email },
+    table: table?.n, tableKey: table?.key,
     address: details.type === "delivery" ? { street: details.street, postcode: details.postcode, notes: details.addressNotes } : null,
     notes: details.notes, returnUrl: location.origin + location.pathname,
   };
@@ -350,7 +369,7 @@ async function submitOrder(form) {
     await refreshConfig();
     const code = data.error;
     if (code === "sold_out" || code === "paused") { notice = { kind: "error", text: t(code === "paused" ? "order.paused" : "order.err.sold_out") }; openDrawer("cart"); return; }
-    notice = { kind: "error", text: t({ slot: "order.err.slot", area: "order.err.area", street: "order.err.street" }[code] || "order.err.generic") };
+    notice = { kind: "error", text: t({ slot: "order.err.slot", area: "order.err.area", street: "order.err.street", table: "order.tableBad", closed: "order.tableClosed" }[code] || "order.err.generic") };
   } catch {
     notice = { kind: "error", text: t("order.err.generic") };
   }
@@ -377,13 +396,17 @@ async function loadStatus() {
     updateCartButtons();
   }
   const s = data.status;
-  const message = s === "ready" ? t(`order.st.ready.${data.type}`) : t(`order.st.${s}`);
+  const atTable = data.type === "table";
+  const message = s === "ready" ? t(`order.st.ready.${data.type}`)
+    : atTable && ["new", "completed"].includes(s) ? t(`order.st.${s}.table`) : t(`order.st.${s}`);
   const step = STEPS.indexOf(s);
-  const when = t(data.type === "delivery" ? "order.whenDelivery" : "order.whenPickup", { when: slotLabel(data.when) });
+  const when = atTable ? t("order.whenTable", { n: data.table })
+    : t(data.type === "delivery" ? "order.whenDelivery" : "order.whenPickup", { when: slotLabel(data.when) });
   const payLine = data.paid ? t("order.paidOnline")
+    : atTable ? t("order.toPayTable", { total: eur(data.total) })
     : t("order.toPay", { type: t(data.type === "delivery" ? "order.toPayDelivery" : "order.toPayPickup"), total: eur(data.total) });
 
-  body.innerHTML = `
+  body.innerHTML = `${tableBarHtml()}
     <div class="status status-${s}">
       <div class="status-icon" aria-hidden="true">${s === "cancelled" ? "!" : s === "pending_payment" ? '<span class="spinner"></span>' : '<svg viewBox="0 0 64 64"><path d="M20 33l8 8 16-17" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'}</div>
       <p class="eyebrow">${esc(t("order.number", { number: data.number }))}</p>
@@ -396,7 +419,7 @@ async function loadStatus() {
       ${data.demo ? `<p class="cart-notice demo">${esc(t("order.demo"))}</p>` : ""}
       ${["completed", "cancelled"].includes(s) ? "" : `<p class="status-live">${esc(t("order.live"))}</p>`}
     </div>`;
-  foot.innerHTML = `<button type="button" class="btn btn-primary btn-block" data-new-order>${esc(t("order.newOrder"))}</button>`;
+  foot.innerHTML = `<button type="button" class="btn btn-primary btn-block" data-new-order>${esc(t(atTable ? "order.orderMore" : "order.newOrder"))}</button>`;
   if (!["completed", "cancelled"].includes(s)) statusTimer = setTimeout(loadStatus, s === "pending_payment" ? 2500 : 10000);
 }
 
@@ -436,6 +459,8 @@ document.addEventListener("click", (e) => {
   } else if (e.target.closest("[data-browse]")) {
     closeDrawer();
     setTimeout(() => $("#menu").scrollIntoView({ behavior: "smooth" }), 330);
+  } else if (e.target.closest("[data-request]")) {
+    sendRequest(e.target.closest("[data-request]"));
   } else if (e.target.closest("[data-new-order]")) {
     closeDrawer();
   }
@@ -445,7 +470,7 @@ drawer.addEventListener("input", (e) => {
   const el = e.target;
   if (!el.name || !el.closest("#checkout-form")) return;
   details[el.name] = el.value;
-  saved.set("oo-details", { ...details, when: undefined, notes: undefined });
+  saved.set("oo-details", { ...details, type: table ? undefined : details.type, when: undefined, notes: undefined });
   if (el.closest(".field")?.classList.contains("invalid")) checkField(el);
   if (el.name === "type") { notice = null; renderCheckout(); return; }
   if (el.name === "payment") {
@@ -463,6 +488,22 @@ document.addEventListener("site:lang", () => {
   updateCartButtons();
   if (!drawer.hidden) render();
 });
+
+async function sendRequest(btn) {
+  const kind = btn.dataset.request;
+  btn.disabled = true;
+  let ok = !!config.preview;
+  if (!config.preview) {
+    const res = await api("table-request", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ table: table.n, key: table.key, kind }) })
+      .catch(() => ({ ok: false, data: {} }));
+    ok = res.ok;
+    if (!ok && res.data.error === "table") { notice = { kind: "error", text: t("order.tableBad") }; render(); return; }
+  }
+  notice = ok ? { kind: "info", text: config.preview ? t("order.requestPreview") : t(`order.requestSent.${kind}`) } : { kind: "error", text: t("order.err.generic") };
+  $(".cart-notice", body)?.remove();
+  $(".table-bar", body).insertAdjacentHTML("afterend", noticeHtml());
+  setTimeout(() => { btn.disabled = false; }, 4000);
+}
 
 async function refreshConfig() {
   const { ok, data } = await api("config");
@@ -490,6 +531,25 @@ async function start() {
   updateCartButtons();
 
   const params = new URLSearchParams(location.search);
+  const n = Number(params.get("table"));
+  if (ORDERING.table?.enabled && (config.table || config.preview) && Number.isInteger(n) && n >= 1 && n <= ORDERING.table.tables) {
+    table = { n, key: params.get("key") || "" };
+    try { sessionStorage.setItem("oo-table", JSON.stringify(table)); } catch { /* storage unavailable */ }
+    params.delete("table");
+    params.delete("key");
+    history.replaceState(null, "", location.pathname + (params.size ? `?${params}` : "") + location.hash);
+  } else if (!params.has("table")) {
+    try { table = JSON.parse(sessionStorage.getItem("oo-table")); } catch { table = null; }
+  }
+  if (table) {
+    details.type = "table";
+    // straight to the menu (after main.js has restored its own scroll position)
+    if (!params.get("order")) setTimeout(() => window.scrollTo({ top: $("#menu").getBoundingClientRect().top + window.scrollY, behavior: "instant" }), 700);
+  } else if (details.type === "table") details.type = "pickup";
+  if (ORDERING.table?.enabled && ORDERING.table.demoLink && !table && (config.table || config.preview)) {
+    $("#menu-hint")?.insertAdjacentHTML("afterend", `<p class="table-try"><span>${esc(t("order.tableTry"))}</span> <a href="?table=5">${esc(t("order.tableTryLink"))}</a></p>`);
+  }
+  updateCartButtons();
   if (params.get("order")) {
     statusId = params.get("order");
     openDrawer("status");

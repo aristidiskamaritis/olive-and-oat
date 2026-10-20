@@ -89,6 +89,34 @@ h1 em { color: var(--terracotta); }
 .avail.out > span:first-child { color: var(--muted); text-decoration: line-through; }
 .avail .switch-text { min-width: 5.5em; font-size: .8rem; }
 
+/* tables calling a waiter or asking for the bill */
+.requests { grid-column: 1 / -1; display: grid; gap: .5rem; }
+.request { display: flex; align-items: center; gap: .8rem; padding: .7rem .9rem; border-radius: 12px; background: #FFF4D6; border: 1.5px solid #E9C46A; animation: glow 1.6s ease-in-out infinite alternate; }
+.request.bill { background: #E6F0DA; border-color: #8FB35A; }
+.request span { flex: 1; font-size: 1.02rem; }
+.request small { color: var(--muted); }
+.request button { padding: .5rem 1rem; border: 0; border-radius: 10px; background: var(--ink); color: var(--cream); font-weight: 700; }
+.type.table strong, .type.table { color: var(--ink); font-weight: 700; }
+
+/* printable table QR codes */
+.qr-board { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.qr-head { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem; }
+.qr-head p { margin: 0; max-width: 46rem; color: var(--ink-soft); }
+.qr-head .primary { padding: .7rem 1.2rem; border: 0; border-radius: 10px; background: var(--ink); color: var(--cream); font-weight: 700; }
+.qr-card { margin: 0; padding: 1.2rem; border-radius: 14px; background: #fff; text-align: center; break-inside: avoid; }
+.qr { display: grid; place-items: center; min-height: 168px; }
+.qr img, .qr canvas { width: 168px; height: 168px; }
+.qr-text { font-size: .7rem; word-break: break-all; color: var(--muted); }
+.qr-card figcaption { margin-top: .7rem; display: grid; gap: .1rem; }
+.qr-card strong { font: 400 1.6rem/1.1 var(--serif); }
+.qr-card span { font-size: .78rem; color: var(--muted); }
+@media print {
+  body { background: #fff; }
+  .top, .tabs, .updated, .qr-head { display: none !important; }
+  .qr-board { grid-template-columns: repeat(3, 1fr); padding: 0; }
+  .qr-card { border: 1px dashed #bbb; }
+}
+
 .updated { text-align: center; color: var(--muted); font-size: .8rem; padding: 0 1rem 2rem; }
 
 @media (max-width: 600px) {

@@ -17,7 +17,17 @@ create table if not exists settings (
   value jsonb not null
 );
 
+-- "Call a waiter" / "bill please" from table QR codes
+create table if not exists requests (
+  id          text primary key,
+  created_at  timestamptz not null default now(),
+  table_no    integer not null,
+  kind        text not null,               -- waiter | bill
+  done        boolean not null default false
+);
+
 -- Only the server (with the service_role key) may read or write these tables.
 -- Row level security with no policies blocks the public "anon" key completely.
 alter table orders   enable row level security;
 alter table settings enable row level security;
+alter table requests enable row level security;

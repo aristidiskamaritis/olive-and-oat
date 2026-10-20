@@ -64,6 +64,22 @@ html:not(.ordering-on) .add-btn { display: none !important; }
 .cf-total { opacity: .9; font-variant-numeric: tabular-nums; }
 .cart-open .hire-fab, .nav-open .cart-float { opacity: 0; visibility: hidden; }
 
+/* ---------- Table (QR code) ordering ---------- */
+.cart-float.is-table { background: var(--olive-dark); }
+.cart-float.is-table:hover { background: var(--olive-deep); }
+.cart-float.is-table .cf-count { color: var(--olive-dark); }
+.table-try {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem .6rem; width: fit-content; max-width: 100%;
+  margin: -.4rem 0 1.6rem; font-size: .88rem; color: rgba(247, 241, 232, .85);
+}
+.table-try a { color: var(--peach); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.table-bar { margin: 0 0 1rem; padding: .85rem .95rem; border-radius: var(--radius-sm); background: #EEF0E4; }
+.table-bar p { margin: 0 0 .7rem; font-size: .88rem; color: var(--olive-dark); }
+.table-actions { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+.table-req { border-color: var(--olive); color: var(--olive-dark); background: var(--white); padding: .65rem .5rem; }
+.table-req:hover { background: var(--olive); color: var(--white); }
+.table-req[disabled] { opacity: .5; cursor: default; }
+
 /* ---------- Drawer ---------- */
 .cart { position: fixed; inset: 0; z-index: 900; }
 .cart[hidden] { display: none; }
@@ -166,6 +182,8 @@ html:not(.ordering-on) .add-btn { display: none !important; }
   .cart-panel { top: auto; width: 100%; height: 94vh; height: 94dvh; border-radius: 22px 22px 0 0; transform: translateY(100%); }
   .cart-float { left: 1rem; bottom: 1rem; padding-right: .95rem; }
   .cf-label { display: none; } /* count + total only, so it fits beside "Want a site like this?" */
+  .cart-float.is-table .cf-label { display: inline; } /* at a table: count + "Table 5" */
+  .cart-float.is-table .cf-total { display: none; }
   .menu-item { gap: .75rem; }
   .add-btn { min-width: 38px; height: 38px; }
   .cart-btn { width: 38px; height: 38px; }
