@@ -4,6 +4,8 @@
    ========================================================= */
 
 const IMG = (id, w = 1200) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=80`;
+// srcset with several widths, so phones and high-resolution screens get a sharp photo
+const IMGSET = (id, widths) => widths.map((w) => `${IMG(id, w)} ${w}w`).join(", ");
 
 /* Opening hours: 0 = Sunday … 6 = Saturday. Times in 24h "HH:MM". */
 const HOURS = {

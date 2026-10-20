@@ -70,7 +70,8 @@ html:not(.ordering-on) .add-btn { display: none !important; }
 .cart-float.is-table .cf-count { color: var(--olive-dark); }
 .table-try {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem .6rem; width: fit-content; max-width: 100%;
-  margin: -.4rem 0 1.6rem; font-size: .88rem; color: rgba(247, 241, 232, .85);
+  margin: -.4rem 0 1.6rem; padding: .4rem .9rem; border-radius: 14px; background: rgba(20, 16, 13, .55);
+  font-size: .88rem; font-weight: 500; color: var(--cream);
 }
 .table-try a { color: var(--peach); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
 .table-bar { margin: 0 0 1rem; padding: .85rem .95rem; border-radius: var(--radius-sm); background: #EEF0E4; }

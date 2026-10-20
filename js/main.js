@@ -300,7 +300,7 @@
       return `
         <div class="menu-item" data-idx="${i}">
           <div class="menu-thumb" aria-hidden="true">
-            <img src="${IMG(it.img, 200)}" alt="" loading="lazy">
+            <img src="${IMG(it.img, 200)}" srcset="${IMGSET(it.img, [100, 160, 240])}" sizes="74px" alt="" loading="lazy">
             <span class="thumb-badge"><svg viewBox="0 0 24 24"><path d="M12 6v12M6 12h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
           </div>
           <div class="menu-item-main">
@@ -529,7 +529,7 @@
   function renderGallery() {
     $("#gallery-grid").innerHTML = GALLERY.map((g, i) => `
       <button type="button" class="gallery-item" data-index="${i}" aria-label="${esc(g[lang])}">
-        <img src="${IMG(g.id, 800)}" alt="${esc(g[lang])}" loading="lazy">
+        <img src="${IMG(g.id, 800)}" srcset="${IMGSET(g.id, [400, 800, 1200, 1600])}" sizes="${i === 0 ? "(max-width: 900px) 100vw, 50vw" : "(max-width: 900px) 50vw, 25vw"}" alt="${esc(g[lang])}" loading="lazy">
       </button>`).join("");
   }
 
@@ -548,12 +548,12 @@
   async function setLbImage(i) {
     lbIndex = (i + GALLERY.length) % GALLERY.length;
     const g = GALLERY[lbIndex];
-    lbImg.src = IMG(g.id, 800); // already cached from the grid → instant
+    lbImg.src = thumbOf(lbIndex)?.querySelector("img")?.currentSrc || IMG(g.id, 800); // already cached from the grid → instant
     lbImg.alt = g[lang];
     lbCap.textContent = `${g[lang]}  ·  ${lbIndex + 1} / ${GALLERY.length}`;
     try { await lbImg.decode(); } catch { /* ignore */ }
     const hi = new Image();
-    hi.src = IMG(g.id, 1600);
+    hi.src = IMG(g.id, Math.min(2400, Math.round(1200 * (window.devicePixelRatio || 1))));
     hi.onload = () => { if (lbIndex === GALLERY.indexOf(g)) lbImg.src = hi.src; };
   }
 
