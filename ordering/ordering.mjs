@@ -547,7 +547,7 @@ async function start() {
     if (!params.get("order")) setTimeout(() => window.scrollTo({ top: $("#menu").getBoundingClientRect().top + window.scrollY, behavior: "instant" }), 700);
   } else if (details.type === "table") details.type = "pickup";
   if (ORDERING.table?.enabled && ORDERING.table.demoLink && !table && (config.table || config.preview)) {
-    $("#menu-hint")?.insertAdjacentHTML("afterend", `<p class="table-try"><span>${esc(t("order.tableTry"))}</span> <a href="?table=5">${esc(t("order.tableTryLink"))}</a></p>`);
+    $(".menu-note")?.insertAdjacentHTML("beforebegin", `<p class="table-try"><span>${esc(t("order.tableTry"))}</span> <a href="?table=5">${esc(t("order.tableTryLink"))}</a></p>`);
   }
   updateCartButtons();
   if (params.get("order")) {

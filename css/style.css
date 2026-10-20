@@ -200,7 +200,7 @@ p { margin: 0 0 1em; }
   display: inline-flex; align-items: center; gap: .55rem;
   background: rgba(255, 255, 255, .12); border: 1px solid rgba(255, 255, 255, .25);
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  padding: .42rem 1rem; border-radius: 999px; font-size: .82rem; font-weight: 600; margin-bottom: 1.8rem;
+  padding: .42rem 1rem; border-radius: 999px; font-size: .82rem; font-weight: 600; margin-bottom: 1.4rem; vertical-align: middle;
 }
 .status-pill .dot { width: 8px; height: 8px; border-radius: 50%; background: #9BD27A; box-shadow: 0 0 0 0 rgba(155, 210, 122, .7); animation: pulse 2.2s infinite; }
 .status-pill.closed .dot { background: #F08C6B; animation: none; }
@@ -597,7 +597,7 @@ p { margin: 0 0 1em; }
   transition: background-color .2s ease, opacity .3s ease, visibility .3s;
 }
 .hire-fab:hover { background: var(--olive-dark); }
-.nav-open .hire-fab, .hire-open .hire-fab { opacity: 0; visibility: hidden; }
+.nav-open .hire-fab, .hire-open .hire-fab, .fab-away .hire-fab { opacity: 0; visibility: hidden; }
 
 .hire { position: fixed; inset: 0; z-index: 850; display: flex; align-items: flex-end; justify-content: flex-end; padding: 1.25rem; }
 .hire[hidden] { display: none; }
@@ -717,9 +717,9 @@ p { margin: 0 0 1em; }
 
 /* ---------- Demo website sign (this is a portfolio concept, not a real café) ---------- */
 .demo-sign {
-  display: grid; width: fit-content; gap: .45rem; max-width: 100%;
-  margin-bottom: 1.6rem; padding: 1rem 1.4rem 1.05rem;
-  border: 2px dashed var(--peach); border-radius: var(--radius-sm);
+  display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: .2rem .7rem; max-width: 100%; vertical-align: middle;
+  margin: 0 .6rem 1.4rem 0; padding: .45rem 1rem;
+  border: 1.5px dashed var(--peach); border-radius: 999px;
   background: rgba(36, 31, 27, .5);
   -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
   color: var(--white); text-decoration: none;
@@ -728,6 +728,6 @@ p { margin: 0 0 1em; }
 .demo-sign:hover { background: rgba(36, 31, 27, .7); border-style: solid; }
 .demo-sign-title {
   font-family: var(--font-sans); font-weight: 700; text-transform: uppercase;
-  font-size: clamp(1.7rem, 4.4vw, 3rem); letter-spacing: .14em; line-height: 1; color: var(--peach);
+  font-size: .8rem; letter-spacing: .16em; line-height: 1.3; color: var(--peach);
 }
-.demo-sign-text { font-size: clamp(.85rem, 1.2vw, .98rem); opacity: .92; }
+.demo-sign-text { font-size: .82rem; line-height: 1.3; opacity: .92; }

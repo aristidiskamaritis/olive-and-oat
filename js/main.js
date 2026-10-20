@@ -942,5 +942,16 @@
     moveLangPill(false);
   });
 
+  // The floating "Want a site like this?" button steps aside while the hero or footer
+  // (which both carry the same link) is on screen, so it never covers content there
+  if ("IntersectionObserver" in window) {
+    const fabAway = new Set();
+    const fabIo = new IntersectionObserver((entries) => {
+      entries.forEach((en) => (en.isIntersecting ? fabAway.add(en.target) : fabAway.delete(en.target)));
+      document.body.classList.toggle("fab-away", fabAway.size > 0);
+    }, { threshold: 0.12 });
+    [$(".hero"), $(".site-footer")].forEach((el) => el && fabIo.observe(el));
+  }
+
   setInterval(renderStatus, 60 * 1000);
 })();
